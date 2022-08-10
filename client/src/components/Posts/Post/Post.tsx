@@ -8,19 +8,18 @@ import { useAppDispatch } from "../../../store/store";
 import useStyles from "./styles";
 import { IPost } from "../../../../types";
 
-import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ContentCut from "@mui/icons-material/ContentCut";
-import ContentCopy from "@mui/icons-material/ContentCopy";
-import ContentPaste from "@mui/icons-material/ContentPaste";
+
 import Cloud from "@mui/icons-material/Cloud";
 import EditIcon from "@mui/icons-material/Edit";
 import { useRef } from "react";
 import { useEffect } from "react";
+import EditModal from "./EditModal";
+import { setSelectedPost } from "../../../features/postsSlice";
 
 interface IProps {
 	post: IPost;
@@ -30,11 +29,13 @@ const Post: React.FC<IProps> = ({ post }) => {
 	const dispatch = useAppDispatch();
 	const classes = useStyles();
 	const [showEdit, setShowEdit] = useState(false);
+	const [openModal, setOpenModal] = useState(false);
+
 	const editMenu = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const checkOutside = (e: any) => {
-			console.log("here", editMenu);
+			// console.log("here", editMenu);
 
 			if (!editMenu?.current?.contains(e.target)) {
 				setShowEdit(false);
@@ -44,23 +45,15 @@ const Post: React.FC<IProps> = ({ post }) => {
 
 		document.addEventListener("mousedown", checkOutside);
 
-		// const checkOutside = () => {
-		// 	document.addEventListener("mousedown", (e: any) => {
-		// 		console.log("here");
-		// 		if (!editMenu?.current?.contains(e.target)) {
-		// 			return setShowEdit(false);
-		// 		}
-		// 	});
-		// };
-
 		return () => {
-			console.log("cl");
+			// console.log("cl");
 			document.removeEventListener("mousedown", checkOutside);
 		};
 	}, [showEdit]);
 
-	const editDisplay = (e: React.MouseEvent<HTMLButtonElement>) => {
+	const handleEditModal = () => {
 		setShowEdit(true);
+		dispatch(setSelectedPost(post));
 	};
 
 	return (
@@ -82,7 +75,7 @@ const Post: React.FC<IProps> = ({ post }) => {
 				{showEdit ? (
 					<Paper className={classes.overlayMenu} sx={{ width: 120 }} ref={editMenu}>
 						<MenuList>
-							<MenuItem>
+							<MenuItem onClick={() => setOpenModal(true)}>
 								<ListItemIcon>
 									<EditIcon fontSize="small" />
 								</ListItemIcon>
@@ -98,7 +91,7 @@ const Post: React.FC<IProps> = ({ post }) => {
 					</Paper>
 				) : (
 					<div className={classes.overlay2}>
-						<Button style={{ color: "white" }} size="small" onClick={editDisplay}>
+						<Button style={{ color: "white" }} size="small" onClick={handleEditModal}>
 							<MoreHoriz />
 						</Button>
 					</div>
@@ -126,6 +119,7 @@ const Post: React.FC<IProps> = ({ post }) => {
 					</Button>
 				</CardActions>
 			</Card>
+			<EditModal openModal={openModal} setOpenModal={setOpenModal} />
 		</>
 	);
 };

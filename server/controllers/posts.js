@@ -11,6 +11,15 @@ const getPosts = async (req, res) => {
 	}
 };
 
+const getSpecificPost = async (req, res) => {
+	try {
+		const post = await PostMessage.findById(req.body);
+		res.status(200).json(post);
+	} catch (err) {
+		res.status(404).json({ message: err.message });
+	}
+};
+
 const createPost = async (req, res) => {
 	const post = req.body;
 	const newPost = new PostMessage(post);
@@ -36,4 +45,4 @@ const updatePost = async (req, res) => {
 	return res.status(404).json(`No post found with id: ${_id}`);
 };
 
-export { getPosts, createPost, updatePost };
+export { getPosts, createPost, updatePost, getSpecificPost };

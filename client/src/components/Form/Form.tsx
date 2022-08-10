@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { createPost } from "../../features/postsSlice";
+import { createPost, getSelectedPost, updatePost } from "../../features/postsSlice";
 import { IPost } from "../../../types";
 import useStyles from "./styles";
 import { useAppDispatch } from "../../store/store";
 
 // const FileBase = require("react-file-base64");
 
-const Form: React.FC = () => {
+interface IProps {
+	openModal?: boolean;
+	setOpenModal?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 	const classes = useStyles();
 	const dispatch = useAppDispatch();
+	const selectedPost = useSelector(getSelectedPost);
 	const [postData, setPostData] = useState<IPost>({
 		creator: "",
 		title: "",
@@ -19,6 +25,13 @@ const Form: React.FC = () => {
 		selectedFile: "",
 	});
 
+	useEffect(() => {
+		console.log(selectedPost);
+		if (selectedPost) {
+			setPostData(selectedPost);
+		}
+	}, [selectedPost]);
+
 	const clear = () => {
 		setPostData({ creator: "", title: "", message: "", tags: [], selectedFile: "" });
 	};
@@ -26,8 +39,15 @@ const Form: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		dispatch(createPost(postData));
-		// clear();
+		if (openModal && selectedPost) {
+			dispatch(updatePost({ id: selectedPost._id!, post: postData }));
+			setOpenModal!(false);
+			// window.location.replace("/");
+		} else {
+			console.log(postData);
+			dispatch(createPost(postData));
+		}
+		clear();
 	};
 
 	const setImage = (e: React.ChangeEvent<HTMLInputElement>) => {
