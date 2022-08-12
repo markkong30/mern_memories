@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import { createPost, getSelectedPost, updatePost } from "../../features/postsSlice";
+import { createPost, getIsEditing, getSelectedPost, updatePost } from "../../features/postsSlice";
 import { IPost } from "../../../types";
 import useStyles from "./styles";
 import { useAppDispatch } from "../../store/store";
+import { fetchPosts } from "../../api";
 
 // const FileBase = require("react-file-base64");
 
@@ -17,6 +18,7 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 	const classes = useStyles();
 	const dispatch = useAppDispatch();
 	const selectedPost = useSelector(getSelectedPost);
+	const isEditing = useSelector(getIsEditing);
 	const [postData, setPostData] = useState<IPost>({
 		creator: "",
 		title: "",
@@ -27,10 +29,12 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 
 	useEffect(() => {
 		console.log(selectedPost);
-		if (selectedPost) {
+		if (selectedPost && isEditing) {
 			setPostData(selectedPost);
+		} else {
+			clear();
 		}
-	}, [selectedPost]);
+	}, [selectedPost, isEditing]);
 
 	const clear = () => {
 		setPostData({ creator: "", title: "", message: "", tags: [], selectedFile: "" });
@@ -42,6 +46,7 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 		if (openModal && selectedPost) {
 			dispatch(updatePost({ id: selectedPost._id!, post: postData }));
 			setOpenModal!(false);
+			// dispatch(fetchPosts);
 			// window.location.replace("/");
 		} else {
 			console.log(postData);

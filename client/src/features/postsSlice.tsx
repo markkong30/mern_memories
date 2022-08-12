@@ -8,6 +8,7 @@ import { stat } from "fs";
 interface IState {
 	posts: IPost[];
 	selectedPost: IPost | null;
+	isEditing: boolean;
 }
 
 interface UpdatePost {
@@ -18,6 +19,7 @@ interface UpdatePost {
 const initialState: IState = {
 	posts: [],
 	selectedPost: null,
+	isEditing: false,
 };
 
 export const fetchPosts = createAsyncThunk("getPosts", async () => {
@@ -38,12 +40,21 @@ export const updatePost = createAsyncThunk("updatePost", async ({ id, post }: Up
 	return data;
 });
 
+export const deletePost = createAsyncThunk("deletePost", async (id: string) => {
+	const { data } = await api.deletePost(id);
+
+	return data;
+});
+
 export const postsSlice = createSlice({
 	name: "posts",
 	initialState,
 	reducers: {
 		setSelectedPost: (state, action) => {
 			state.selectedPost = action.payload;
+		},
+		setIsEditing: (state, action) => {
+			state.isEditing = action.payload;
 		},
 	},
 	extraReducers: (builder) => {
@@ -54,23 +65,22 @@ export const postsSlice = createSlice({
 			state.posts = [...state.posts, action.payload];
 		});
 		builder.addCase(updatePost.fulfilled, (state, action) => {
-			for (let post of state.posts) {
-				if (post._id == action.payload._id) {
-					post = action.payload;
-				}
-			}
+			state.posts = state.posts.map((post) =>
+				post._id == action.payload._id ? action.payload : post
+			);
 
 			state.selectedPost = null;
-			// state.posts = state.posts.map((post) =>
-			// 	post._id == action.payload._id ? action.payload : post
-			// );
+		});
+		builder.addCase(deletePost.fulfilled, (state, action) => {
+			state.posts = state.posts.filter((post) => post._id !== action.payload._id);
 		});
 	},
 });
 
-export const { setSelectedPost } = postsSlice.actions;
+export const { setSelectedPost, setIsEditing } = postsSlice.actions;
 
 export const getPosts = (state: RootState) => state.posts.posts;
 export const getSelectedPost = (state: RootState) => state.posts.selectedPost;
+export const getIsEditing = (state: RootState) => state.posts.isEditing;
 
 export default postsSlice.reducer;

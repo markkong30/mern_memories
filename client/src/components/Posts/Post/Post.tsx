@@ -19,7 +19,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useRef } from "react";
 import { useEffect } from "react";
 import EditModal from "./EditModal";
-import { setSelectedPost } from "../../../features/postsSlice";
+import { setIsEditing, setSelectedPost } from "../../../features/postsSlice";
+import { deletePost } from "../../../features/postsSlice";
 
 interface IProps {
 	post: IPost;
@@ -35,10 +36,9 @@ const Post: React.FC<IProps> = ({ post }) => {
 
 	useEffect(() => {
 		const checkOutside = (e: any) => {
-			// console.log("here", editMenu);
-
 			if (!editMenu?.current?.contains(e.target)) {
 				setShowEdit(false);
+
 				document.removeEventListener("mousedown", checkOutside);
 			}
 		};
@@ -46,7 +46,6 @@ const Post: React.FC<IProps> = ({ post }) => {
 		document.addEventListener("mousedown", checkOutside);
 
 		return () => {
-			// console.log("cl");
 			document.removeEventListener("mousedown", checkOutside);
 		};
 	}, [showEdit]);
@@ -54,6 +53,11 @@ const Post: React.FC<IProps> = ({ post }) => {
 	const handleEditModal = () => {
 		setShowEdit(true);
 		dispatch(setSelectedPost(post));
+	};
+
+	const handleOpenModal = () => {
+		setOpenModal(true);
+		dispatch(setIsEditing(true));
 	};
 
 	return (
@@ -75,13 +79,13 @@ const Post: React.FC<IProps> = ({ post }) => {
 				{showEdit ? (
 					<Paper className={classes.overlayMenu} sx={{ width: 120 }} ref={editMenu}>
 						<MenuList>
-							<MenuItem onClick={() => setOpenModal(true)}>
+							<MenuItem onClick={handleOpenModal}>
 								<ListItemIcon>
 									<EditIcon fontSize="small" />
 								</ListItemIcon>
 								<ListItemText>Edit</ListItemText>
 							</MenuItem>
-							<MenuItem>
+							<MenuItem onClick={() => dispatch(deletePost(post._id!))}>
 								<ListItemIcon>
 									<Delete fontSize="small" />
 								</ListItemIcon>
@@ -114,9 +118,9 @@ const Post: React.FC<IProps> = ({ post }) => {
 					<Button size="small" color="primary" onClick={() => {}}>
 						<ThumbUpAlt fontSize="small" /> Like {post.likeCount}{" "}
 					</Button>
-					<Button size="small" color="primary" onClick={() => {}}>
+					{/* <Button size="small" color="primary" onClick={() => {}}>
 						<Delete fontSize="small" /> Delete
-					</Button>
+					</Button> */}
 				</CardActions>
 			</Card>
 			<EditModal openModal={openModal} setOpenModal={setOpenModal} />

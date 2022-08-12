@@ -5,6 +5,8 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Form from "../../Form/Form";
 import { IPost } from "../../../../types";
+import { useAppDispatch } from "../../../store/store";
+import { setIsEditing, setSelectedPost } from "../../../features/postsSlice";
 
 const style = {
 	position: "absolute" as "absolute",
@@ -24,7 +26,12 @@ interface IProps {
 }
 
 const EditModal: React.FC<IProps> = ({ openModal, setOpenModal }) => {
-	const handleClose = () => setOpenModal(false);
+	const dispatch = useAppDispatch();
+
+	const handleClose = () => {
+		setOpenModal(false);
+		dispatch(setIsEditing(false));
+	};
 
 	return (
 		<div>
