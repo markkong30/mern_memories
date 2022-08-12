@@ -1,5 +1,4 @@
 import * as dotenv from "dotenv";
-dotenv.config();
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
@@ -7,6 +6,7 @@ import cors from "cors";
 
 import postRoutes from "./routes/posts.js";
 
+dotenv.config();
 const app = express();
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
@@ -18,7 +18,7 @@ app.use("/posts", postRoutes);
 const mongoURL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@memories.rhhbrmk.mongodb.net/?retryWrites=true&w=majority`;
 // const mongoURL =
 // 	"mongodb+srv://admin:jk342jk342@memories.rhhbrmk.mongodb.net/?retryWrites=true&w=majority";
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 mongoose
 	.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })

@@ -19,7 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useRef } from "react";
 import { useEffect } from "react";
 import EditModal from "./EditModal";
-import { setIsEditing, setSelectedPost } from "../../../features/postsSlice";
+import { likePost, setIsEditing, setSelectedPost } from "../../../features/postsSlice";
 import { deletePost } from "../../../features/postsSlice";
 
 interface IProps {
@@ -115,8 +115,9 @@ const Post: React.FC<IProps> = ({ post }) => {
 					</Typography>
 				</CardContent>
 				<CardActions className={classes.cardActions}>
-					<Button size="small" color="primary" onClick={() => {}}>
-						<ThumbUpAlt fontSize="small" /> Like {post.likeCount}{" "}
+					<Button size="small" color="primary" onClick={() => dispatch(likePost(post._id!))}>
+						<ThumbUpAlt fontSize="small" />
+						&nbsp; Like {post.likeCount}
 					</Button>
 					{/* <Button size="small" color="primary" onClick={() => {}}>
 						<Delete fontSize="small" /> Delete
