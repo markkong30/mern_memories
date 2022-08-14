@@ -3,7 +3,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import * as api from "../api/index";
 import { IPost } from "../../types";
 import { RootState } from "../store/store";
-import { stat } from "fs";
 
 interface IState {
 	posts: IPost[];

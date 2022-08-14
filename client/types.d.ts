@@ -10,10 +10,9 @@ export interface IPost {
 }
 
 export interface IUser {
-	_id: string;
-	_type: string;
-	userName: string;
-	image: string;
+	name: string;
+	token: string;
+	picture: string;
 }
 
 export interface UserProfile {

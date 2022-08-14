@@ -6,6 +6,7 @@ import useStyles from "./styles";
 
 const Navbar = () => {
 	const classes = useStyles();
+	const location = useLocation();
 
 	const [user, setUser] = useState(JSON.parse(localStorage.getItem("userProfile")!));
 
@@ -37,11 +38,11 @@ const Navbar = () => {
 							Logout
 						</Button>
 					</div>
-				) : (
+				) : location.pathname !== "/auth" ? (
 					<Button component={Link} to="/auth" variant="contained" color="primary">
 						Sign In
 					</Button>
-				)}
+				) : null}
 			</Toolbar>
 		</AppBar>
 	);

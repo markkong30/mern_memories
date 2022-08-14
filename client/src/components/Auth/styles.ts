@@ -18,6 +18,9 @@ export default makeStyles((theme) => ({
 		backgroundColor: theme.palette.secondary.main,
 	},
 	form: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
 		width: "100%", // Fix IE 11 issue.
 		marginTop: theme.spacing(3),
 	},
@@ -25,6 +28,6 @@ export default makeStyles((theme) => ({
 		margin: theme.spacing(3, 0, 2),
 	},
 	googleButton: {
-		marginBottom: theme.spacing(2),
+		width: "100% !important",
 	},
 }));
