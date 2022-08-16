@@ -46,8 +46,6 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 		if (openModal && selectedPost) {
 			dispatch(updatePost({ id: selectedPost._id!, post: postData }));
 			setOpenModal!(false);
-			// dispatch(fetchPosts);
-			// window.location.replace("/");
 		} else {
 			console.log(postData);
 			dispatch(createPost(postData));

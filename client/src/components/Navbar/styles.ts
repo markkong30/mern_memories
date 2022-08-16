@@ -26,7 +26,9 @@ export default makeStyles((theme) => ({
 	profile: {
 		display: "flex",
 		justifyContent: "space-between",
-		width: "400px",
+		gap: theme.spacing(2),
+		color: "gray",
+		// width: "400px",
 	},
 	userName: {
 		display: "flex",

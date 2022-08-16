@@ -1,13 +1,19 @@
 import axios from "axios";
-import { IPost } from "../../types";
+import { IPost, UserProfile } from "../../types";
 
-const url = `${process.env.REACT_APP_BASE_URL}/posts`;
+const url = `${process.env.REACT_APP_BASE_URL}`;
+const API = axios.create({ baseURL: url });
 
-export const fetchPosts = () => axios.get(url);
-export const createPost = (newPost: IPost) => axios.post(url, newPost);
+//posts
+
+export const fetchPosts = () => API.get("/posts");
+export const createPost = (newPost: IPost) => API.post("/posts", newPost);
+export const likePost = (id: string) => API.patch(`/posts/${id}/likePost`);
 export const updatePost = (id: string, updatedPost: IPost) =>
-	axios.patch(`${url}/${id}`, updatedPost);
+	API.patch(`/posts/${id}`, updatedPost);
+export const deletePost = (id: string) => API.delete(`/posts/${id}`);
 
-export const deletePost = (id: string) => axios.delete(`${url}/${id}`);
-export const likePost = (id: string) => axios.patch(`${url}/${id}/like`);
-// export const fetchSpecificPost = (id: string) => axios.get(`${url}/${id}`);
+//user
+
+export const signIn = (formData: UserProfile) => API.post("/user/signin", formData);
+export const signUp = (formData: UserProfile) => API.post("/user/signup", formData);

@@ -6,9 +6,19 @@ import jwt_decode from "jwt-decode";
 import useStyles from "./styles";
 import Input from "./Input";
 import { useAppDispatch } from "../../store/store";
-import { saveUser } from "../../features/userSlice";
+import { saveUser, signIn, signUp } from "../../features/userSlice";
+import { useNavigate } from "react-router-dom";
 
-const initialState = { firstName: "", lastName: "", email: "", password: "", confirmPassword: "" };
+const randomImg = `https://picsum.photos/id/${Math.floor(Math.random() * 1000)}/300`;
+
+const initialState = {
+	firstName: "",
+	lastName: "",
+	email: "",
+	password: "",
+	confirmPassword: "",
+	picture: randomImg,
+};
 
 interface CredentialResponse {
 	/** This field is the returned ID token */
@@ -26,12 +36,13 @@ interface CredentialResponse {
 	clientId?: string;
 }
 
-const Auth = () => {
-	const [form, setForm] = useState(initialState);
+const Auth: React.FC = () => {
+	const [formData, setFormData] = useState(initialState);
 	const [isSignup, setIsSignup] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const handleShowPassword = () => setShowPassword(!showPassword);
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 	const classes = useStyles();
 
 	const loginSuccess = (res: CredentialResponse) => {
@@ -40,12 +51,25 @@ const Auth = () => {
 		const userProfile = { name, picture, token: sub };
 		console.log(decoded);
 
+		localStorage.setItem("userProfile", JSON.stringify(userProfile));
 		dispatch(saveUser(userProfile));
+		navigate("/");
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {};
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
 
-	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {};
+	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		if (isSignup) {
+			dispatch(signUp({ formData, navigate }));
+		} else {
+			dispatch(signIn({ formData, navigate }));
+		}
+		// navigate("/");
+	};
 
 	return (
 		<Container component="main" maxWidth="xs">

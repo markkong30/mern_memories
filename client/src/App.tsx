@@ -7,8 +7,19 @@ import Navbar from "./components/Navbar/Navbar";
 import Home from "./components/Home/Home";
 import Auth from "./components/Auth/Auth";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { saveUser } from "./features/userSlice";
 
 const App = () => {
+	const dispatch = useAppDispatch();
+
+	useEffect(() => {
+		const user = JSON.parse(localStorage.getItem("userProfile")!);
+
+		if (user) {
+			dispatch(saveUser(user));
+		}
+	}, [dispatch]);
+
 	return (
 		<GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_ID!}>
 			<Container maxWidth="lg">

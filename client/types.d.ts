@@ -9,20 +9,19 @@ export interface IPost {
 	likeCount?: number;
 }
 
-export interface IUser {
+export interface GoogleUser {
 	name: string;
 	token: string;
 	picture: string;
 }
 
 export interface UserProfile {
-	userProfile: IUser | null;
-	allUsers: IUser[] | [];
-	addUser: (user: any) => void;
-	removeUser: () => void;
-	fetchAllUsers: () => void;
+	id: string;
+	name: string;
+	email: string;
+	password: string;
+	picture?: string;
 }
-
 export interface Likes {
 	_key: string;
 	_ref: string;

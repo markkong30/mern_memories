@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import * as api from "../api/index";
-import { IUser } from "../../types";
+import { GoogleUser, UserProfile } from "../../types";
 import { RootState } from "../store/store";
 
 interface IState {
-	userProfile: IUser;
+	userProfile: GoogleUser | UserProfile | null;
 }
 
 const initialState: IState = {
@@ -16,8 +16,22 @@ const initialState: IState = {
 	},
 };
 
-export const fetchPosts = createAsyncThunk("getPosts", async () => {
+export const createUser = createAsyncThunk("createUser", async () => {
 	const { data } = await api.fetchPosts();
+
+	return data;
+});
+
+export const signIn = createAsyncThunk("signIn", async ({ formData, navigate }: any) => {
+	const { data } = await api.signIn(formData);
+	navigate("/");
+
+	return data;
+});
+
+export const signUp = createAsyncThunk("signUp", async ({ formData, navigate }: any) => {
+	const { data } = await api.signUp(formData);
+	navigate("/");
 
 	return data;
 });
@@ -26,14 +40,28 @@ export const userSlice = createSlice({
 	name: "user",
 	initialState,
 	reducers: {
-		saveUser: (state, action: PayloadAction<IUser>) => {
+		saveUser: (state, action) => {
 			state.userProfile = action.payload;
 		},
+		deleteUser: (state) => {
+			state.userProfile = null;
+		},
 	},
-	extraReducers: (builder) => {},
+	extraReducers: (builder) => {
+		builder.addCase(signIn.fulfilled, (state, action) => {
+			localStorage.setItem("userProfile", JSON.stringify(action.payload.userProfile));
+
+			state.userProfile = action.payload.userProfile;
+		});
+		builder.addCase(signUp.fulfilled, (state, action) => {
+			localStorage.setItem("userProfile", JSON.stringify(action.payload.userProfile));
+
+			state.userProfile = action.payload.userProfile;
+		});
+	},
 });
 
-export const { saveUser } = userSlice.actions;
+export const { saveUser, deleteUser } = userSlice.actions;
 
 export const getUserProfile = (state: RootState) => state.user.userProfile;
 

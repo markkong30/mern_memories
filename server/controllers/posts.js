@@ -59,13 +59,18 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
 	const _id = req.params.id;
 
+	if (!req.userId) return res.json({ message: "Not logged in" });
+
 	if (mongoose.Types.ObjectId.isValid(_id)) {
 		const post = await PostMessage.findById(_id);
-		const updatedPost = await PostMessage.findByIdAndUpdate(
-			_id,
-			{ likeCount: post.likeCount + 1 },
-			{ new: true }
-		);
+		const index = post.likes.findIndex((id) => id == req.userId.toString());
+
+		if (index === -1) {
+			post.likes.push(req.userId);
+		} else {
+			post.likes = post.likes.filter((id) => id !== req.userId.toString());
+		}
+		const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
 
 		return res.status(200).json(updatedPost);
 	}
