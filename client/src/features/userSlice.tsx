@@ -6,6 +6,10 @@ import { RootState } from "../store/store";
 
 interface IState {
 	userProfile: GoogleUser | UserProfile | null;
+	error: {
+		state: boolean;
+		message: string;
+	};
 }
 
 const initialState: IState = {
@@ -13,6 +17,10 @@ const initialState: IState = {
 		name: "",
 		picture: "",
 		token: "",
+	},
+	error: {
+		state: false,
+		message: "",
 	},
 };
 
@@ -46,23 +54,32 @@ export const userSlice = createSlice({
 		deleteUser: (state) => {
 			state.userProfile = null;
 		},
+		setUserError: (state, action) => {
+			state.error = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(signIn.fulfilled, (state, action) => {
 			localStorage.setItem("userProfile", JSON.stringify(action.payload.userProfile));
 
 			state.userProfile = action.payload.userProfile;
+			state.error = { ...state.error, state: false };
 		});
 		builder.addCase(signUp.fulfilled, (state, action) => {
 			localStorage.setItem("userProfile", JSON.stringify(action.payload.userProfile));
 
 			state.userProfile = action.payload.userProfile;
+			state.error = { ...state.error, state: false };
+		});
+		builder.addCase(signIn.rejected, (state, action) => {
+			state.error = { state: true, message: "Invalid email or password!" };
 		});
 	},
 });
 
-export const { saveUser, deleteUser } = userSlice.actions;
+export const { saveUser, deleteUser, setUserError } = userSlice.actions;
 
 export const getUserProfile = (state: RootState) => state.user.userProfile;
+export const getUserError = (state: RootState) => state.user.error;
 
 export default userSlice.reducer;
