@@ -14,6 +14,7 @@ interface IState {
 
 const initialState: IState = {
 	userProfile: {
+		_id: "",
 		name: "",
 		picture: "",
 		token: "",
@@ -23,12 +24,6 @@ const initialState: IState = {
 		message: "",
 	},
 };
-
-export const createUser = createAsyncThunk("createUser", async () => {
-	const { data } = await api.fetchPosts();
-
-	return data;
-});
 
 export const signIn = createAsyncThunk("signIn", async ({ formData, navigate }: any) => {
 	const { data } = await api.signIn(formData);
@@ -60,15 +55,15 @@ export const userSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(signIn.fulfilled, (state, action) => {
-			localStorage.setItem("userProfile", JSON.stringify(action.payload.userProfile));
+			localStorage.setItem("userProfile", JSON.stringify(action.payload));
 
-			state.userProfile = action.payload.userProfile;
+			state.userProfile = action.payload.profile;
 			state.error = { ...state.error, state: false };
 		});
 		builder.addCase(signUp.fulfilled, (state, action) => {
-			localStorage.setItem("userProfile", JSON.stringify(action.payload.userProfile));
+			localStorage.setItem("userProfile", JSON.stringify(action.payload));
 
-			state.userProfile = action.payload.userProfile;
+			state.userProfile = action.payload.profile;
 			state.error = { ...state.error, state: false };
 		});
 		builder.addCase(signIn.rejected, (state, action) => {

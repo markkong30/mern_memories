@@ -22,7 +22,9 @@ const getSpecificPost = async (req, res) => {
 
 const createPost = async (req, res) => {
 	const post = req.body;
-	const newPost = new PostMessage(post);
+	console.log(req.userId);
+
+	const newPost = new PostMessage({ ...post, creator: req.userId });
 
 	try {
 		await newPost.save();
@@ -70,7 +72,7 @@ const likePost = async (req, res) => {
 		} else {
 			post.likes = post.likes.filter((id) => id !== req.userId.toString());
 		}
-		const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+		const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, { new: true });
 
 		return res.status(200).json(updatedPost);
 	}

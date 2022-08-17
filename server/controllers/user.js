@@ -8,7 +8,7 @@ export const signin = async (req, res) => {
 	try {
 		const existingUser = await User.findOne({ email });
 		if (!existingUser) return res.status(404).json({ message: "User doesn't exist" });
-		console.log(existingUser, password);
+
 		const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
 		if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid password" });
 
@@ -18,7 +18,7 @@ export const signin = async (req, res) => {
 			{ expiresIn: "7d" }
 		);
 
-		return res.status(200).json({ userProfile: existingUser, token });
+		return res.status(200).json({ profile: existingUser, token });
 	} catch (err) {
 		return res.status(500).json({ message: "Something went wrong" });
 	}
@@ -45,7 +45,7 @@ export const signup = async (req, res) => {
 			expiresIn: "7d",
 		});
 
-		return res.status(201).json({ userProfile: newUser, token });
+		return res.status(201).json({ profile: newUser, token });
 	} catch (error) {
 		res.status(500).json({ message: "Something went wrong" });
 

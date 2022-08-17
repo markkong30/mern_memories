@@ -15,7 +15,9 @@ const App = () => {
 	useEffect(() => {
 		const user = JSON.parse(localStorage.getItem("userProfile")!);
 
-		if (user) {
+		if (user && user.profile) {
+			dispatch(saveUser(user.profile));
+		} else if (user && user.name) {
 			dispatch(saveUser(user));
 		}
 	}, [dispatch]);

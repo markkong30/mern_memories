@@ -5,7 +5,7 @@ import { createPost, getIsEditing, getSelectedPost, updatePost } from "../../fea
 import { IPost } from "../../../types";
 import useStyles from "./styles";
 import { useAppDispatch } from "../../store/store";
-import { fetchPosts } from "../../api";
+import { getUserProfile } from "../../features/userSlice";
 
 // const FileBase = require("react-file-base64");
 
@@ -18,9 +18,9 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 	const classes = useStyles();
 	const dispatch = useAppDispatch();
 	const selectedPost = useSelector(getSelectedPost);
+	const user = useSelector(getUserProfile);
 	const isEditing = useSelector(getIsEditing);
 	const [postData, setPostData] = useState<IPost>({
-		creator: "",
 		title: "",
 		message: "",
 		tags: [],
@@ -28,7 +28,6 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 	});
 
 	useEffect(() => {
-		console.log(selectedPost);
 		if (selectedPost && isEditing) {
 			setPostData(selectedPost);
 		} else {
@@ -37,18 +36,17 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 	}, [selectedPost, isEditing]);
 
 	const clear = () => {
-		setPostData({ creator: "", title: "", message: "", tags: [], selectedFile: "" });
+		setPostData({ title: "", message: "", tags: [], selectedFile: "" });
 	};
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		if (openModal && selectedPost) {
-			dispatch(updatePost({ id: selectedPost._id!, post: postData }));
+			dispatch(updatePost({ id: selectedPost._id!, post: { ...postData, name: user?.name } }));
 			setOpenModal!(false);
 		} else {
-			console.log(postData);
-			dispatch(createPost(postData));
+			dispatch(createPost({ ...postData, name: user?.name }));
 		}
 		clear();
 	};
@@ -67,6 +65,16 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 		};
 	};
 
+	if (!user?.name) {
+		return (
+			<Paper className={classes.paper}>
+				<Typography variant="h6" align="center">
+					Please Sign In to create your own memories and like other's memories.
+				</Typography>
+			</Paper>
+		);
+	}
+
 	return (
 		<Paper className={classes.paper}>
 			<form
@@ -76,14 +84,7 @@ const Form: React.FC<IProps> = ({ openModal, setOpenModal }) => {
 				onSubmit={handleSubmit}
 			>
 				{/* <Typography variant="h6">{currentId ? `Editing "${post.title}"` : 'Creating a Memory'}</Typography> */}
-				<TextField
-					name="creator"
-					variant="outlined"
-					label="Creator"
-					fullWidth
-					value={postData.creator}
-					onChange={(e) => setPostData({ ...postData, creator: e.target.value })}
-				/>
+
 				<TextField
 					name="title"
 					variant="outlined"

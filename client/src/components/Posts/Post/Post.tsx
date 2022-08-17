@@ -21,6 +21,8 @@ import { useEffect } from "react";
 import EditModal from "./EditModal";
 import { likePost, setIsEditing, setSelectedPost } from "../../../features/postsSlice";
 import { deletePost } from "../../../features/postsSlice";
+import { useSelector } from "react-redux";
+import { getUserProfile } from "../../../features/userSlice";
 
 interface IProps {
 	post: IPost;
@@ -29,10 +31,12 @@ interface IProps {
 const Post: React.FC<IProps> = ({ post }) => {
 	const dispatch = useAppDispatch();
 	const classes = useStyles();
+	const user = useSelector(getUserProfile);
 	const [showEdit, setShowEdit] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 
 	const editMenu = useRef<HTMLDivElement>(null);
+	const alreadyLiked = post?.likes?.includes(user?._id as string);
 
 	useEffect(() => {
 		const checkOutside = (e: any) => {
@@ -72,7 +76,7 @@ const Post: React.FC<IProps> = ({ post }) => {
 					title={post.title}
 				/>
 				<div className={classes.overlay}>
-					<Typography variant="h6">{post.creator}</Typography>
+					<Typography variant="h6">{post.name}</Typography>
 					<Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
 				</div>
 
@@ -115,9 +119,13 @@ const Post: React.FC<IProps> = ({ post }) => {
 					</Typography>
 				</CardContent>
 				<CardActions className={classes.cardActions}>
-					<Button size="small" color="primary" onClick={() => dispatch(likePost(post._id!))}>
+					<Button
+						size="small"
+						color={alreadyLiked ? "secondary" : "primary"}
+						onClick={() => dispatch(likePost(post._id!))}
+					>
 						<ThumbUpAlt fontSize="small" />
-						&nbsp; Like {post.likeCount}
+						&nbsp; Like {post.likes?.length}
 					</Button>
 					{/* <Button size="small" color="primary" onClick={() => {}}>
 						<Delete fontSize="small" /> Delete

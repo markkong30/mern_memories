@@ -22,6 +22,8 @@ const Navbar = () => {
 		googleLogout();
 	};
 
+	console.log(user);
+
 	return (
 		<AppBar className={classes.appBar} position="static" color="inherit">
 			<div className={classes.brandContainer}>
@@ -38,7 +40,7 @@ const Navbar = () => {
 							alt={user.name}
 							src={user.picture || "https://picsum.photos/200"}
 						>
-							{user.name.charAt(0)}
+							{user?.name?.charAt(0)}
 						</Avatar>
 						<Typography className={classes.userName} variant="h6">
 							{user.name}

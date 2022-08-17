@@ -53,13 +53,11 @@ const Auth: React.FC = () => {
 		dispatch(setUserError({ state: false, message: "" }));
 		setIsSignup((prev) => !prev);
 	};
-	console.log(formData);
 
 	const loginSuccess = (res: CredentialResponse) => {
 		const decoded: { name: string; picture: string; sub: string } = jwt_decode(res.credential!);
 		const { name, picture, sub } = decoded;
-		const userProfile = { name, picture, token: sub };
-		console.log(decoded);
+		const userProfile = { name, picture, _id: sub, token: res.credential };
 
 		localStorage.setItem("userProfile", JSON.stringify(userProfile));
 		dispatch(saveUser(userProfile));
